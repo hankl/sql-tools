@@ -1,132 +1,135 @@
-# SQL Tools - 多格式 SQL 查询工具
+# SQL Tools - Multi-Format SQL Query Tool
 
-一个强大的插件化工具，允许您使用 SQL 语句查询 JSON、CSV、Nginx 日志等多种文件格式。
+[English](README.md) | [简体中文](README_zh.md)
 
-## 功能特点
+A powerful plugin-based tool that allows you to query multiple file formats including JSON, CSV, and Nginx logs using SQL statements.
 
-- **多格式支持**：JSON、CSV、Nginx access log，易于扩展
-- **插件化架构**：通过简单的插件机制添加新的文件格式支持
-- **自动表结构创建**：根据文件数据自动推断表结构和列类型
-- **交互式查询**：提供命令行交互式 SQL 查询界面
-- **格式自动检测**：根据文件扩展名自动选择合适的解析器
-- **内存数据库**：使用 SQLite 内存数据库，无需持久化存储
-- **零外部依赖**：仅使用 Python 标准库
 
-## 安装
+## Features
 
-该工具仅需要 Python 3.x，无需安装额外依赖。
+- **Multiple Format Support**: JSON, CSV, Nginx access log, easily extensible
+- **Plugin Architecture**: Add new file format support through simple plugin mechanism
+- **Automatic Schema Creation**: Automatically infer table schema and column types from file data
+- **Interactive Query**: Command-line interactive SQL query interface
+- **Format Auto-Detection**: Automatically select appropriate parser based on file extension
+- **In-Memory Database**: Uses SQLite in-memory database, no persistent storage required
+- **Zero External Dependencies**: Uses only Python standard library
+
+## Installation
+
+This tool only requires Python 3.x, no additional dependencies needed.
 
 ```bash
-# 克隆或下载本项目
+# Clone or download this project
 git clone <repository-url>
 cd sql-tools
 ```
 
-## 使用方法
+## Usage
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 自动检测格式（推荐）
-python3 sqltools.py <文件路径>
+# Auto-detect format (recommended)
+python3 sqltools.py <file_path>
 
-# 列出所有支持的格式
+# List all supported formats
 python3 sqltools.py --list-formats
 
-# 强制指定格式
-python3 sqltools.py <文件路径> --format json|csv|nginx
+# Force specific format
+python3 sqltools.py <file_path> --format json|csv|nginx
 
-# 自定义表名
-python3 sqltools.py <文件路径> --table <表名>
+# Custom table name
+python3 sqltools.py <file_path> --table <table_name>
 ```
 
-### JSON 查询示例
+### JSON Query Example
 
 ```bash
 python3 sqltools.py test.json
 ```
 
 ```sql
--- 查询所有记录
+-- Query all records
 SELECT * FROM test;
 
--- 按条件筛选
+-- Filter by condition
 SELECT * FROM test WHERE type = 'PROJECT';
 
--- 分组统计
+-- Group by statistics
 SELECT type, COUNT(*) FROM test GROUP BY type;
 ```
 
-### CSV 查询示例
+### CSV Query Example
 
 ```bash
 python3 sqltools.py test.csv
 ```
 
 ```sql
--- 查看前 5 条记录
+-- View first 5 records
 SELECT * FROM test LIMIT 5;
 
--- 按部门统计
+-- Group by department
 SELECT department, COUNT(*) FROM test GROUP BY department;
 
--- 计算平均薪资
+-- Calculate average salary
 SELECT department, AVG(salary) FROM test GROUP BY department;
 ```
 
-### Nginx 日志查询示例
+### Nginx Log Query Example
 
 ```bash
 python3 sqltools.py access.log
 ```
 
 ```sql
--- 统计状态码分布
+-- Status code distribution
 SELECT status, COUNT(*) FROM test GROUP BY status;
 
--- 查找 4xx/5xx 错误
+-- Find 4xx/5xx errors
 SELECT * FROM test WHERE status >= 400;
 
--- 统计访问最多的 IP
+-- Top IPs by request count
 SELECT remote_addr, COUNT(*) FROM test GROUP BY remote_addr ORDER BY COUNT(*) DESC LIMIT 10;
 
--- 按路径统计请求量
+-- Request count by path
 SELECT path, COUNT(*) FROM test GROUP BY path ORDER BY COUNT(*) DESC;
 ```
 
-## 支持的文件格式
+## Supported File Formats
 
 ### JSON (.json)
 
-支持三种 JSON 格式：
+Supports three JSON formats:
 
-**1. 包含 data 数组的 JSON 对象**
+**1. JSON object containing data array**
 ```json
 {
   "code": "success",
   "data": [
-    {"id": 1, "name": "项目1", "type": "PROJECT"},
-    {"id": 2, "name": "项目2", "type": "PROJECT"}
+    {"id": 1, "name": "Project 1", "type": "PROJECT"},
+    {"id": 2, "name": "Project 2", "type": "PROJECT"}
   ]
 }
 ```
 
-**2. 直接的 JSON 数组**
+**2. Direct JSON array**
 ```json
 [
-  {"id": 1, "name": "项目1", "type": "PROJECT"},
-  {"id": 2, "name": "项目2", "type": "PROJECT"}
+  {"id": 1, "name": "Project 1", "type": "PROJECT"},
+  {"id": 2, "name": "Project 2", "type": "PROJECT"}
 ]
 ```
 
-**3. 单个 JSON 对象**
+**3. Single JSON object**
 ```json
-{"id": 1, "name": "项目1", "type": "PROJECT"}
+{"id": 1, "name": "Project 1", "type": "PROJECT"}
 ```
 
 ### CSV (.csv, .tsv)
 
-支持标准的 CSV/TSV 文件：
+Supports standard CSV/TSV files:
 
 ```csv
 id,name,age,department,salary
@@ -135,48 +138,48 @@ id,name,age,department,salary
 3,Charlie,25,Engineering,82000
 ```
 
-- 自动检测分隔符（逗号、制表符）
-- 自动推断数据类型（整数、浮点数、文本）
-- 支持带 header 的格式
+- Auto-detect delimiter (comma, tab)
+- Auto-infer data types (integer, float, text)
+- Supports header format
 
-### Nginx 日志 (.log, .access.log)
+### Nginx Log (.log, .access.log)
 
-支持 Nginx Combined 格式：
+Supports Nginx Combined format:
 
 ```
 127.0.0.1 - - [10/Oct/2023:13:55:36 +0000] "GET /api/test HTTP/1.1" 200 1234 "-" "Mozilla/5.0"
 192.168.1.100 - - [10/Oct/2023:13:55:37 +0000] "POST /api/login HTTP/1.1" 200 567 "http://example.com" "curl/7.68.0"
 ```
 
-解析字段包括：
-- `remote_addr` - 客户端 IP 地址
-- `time_local` - 访问时间（转换为 ISO 格式）
-- `request` / `method` / `path` / `protocol` - 请求详情
-- `status` - HTTP 状态码（整数）
-- `body_bytes_sent` - 响应字节数（整数）
-- `http_referer` - 来源页面
-- `http_user_agent` - 用户代理
+Parsed fields include:
+- `remote_addr` - Client IP address
+- `time_local` - Access time (converted to ISO format)
+- `request` / `method` / `path` / `protocol` - Request details
+- `status` - HTTP status code (integer)
+- `body_bytes_sent` - Response bytes sent (integer)
+- `http_referer` - Referrer page
+- `http_user_agent` - User agent
 
-## 项目结构
+## Project Structure
 
 ```
 sql-tools/
-├── sqltools.py              # 主入口程序
+├── sqltools.py              # Main entry point
 ├── core/
-│   ├── engine.py            # SQL 查询执行引擎
-│   ├── schema.py            # 表结构推断模块
-│   └── registry.py          # 插件注册表
+│   ├── engine.py            # SQL query execution engine
+│   ├── schema.py            # Table schema inference module
+│   └── registry.py          # Plugin registry
 ├── parsers/
-│   ├── base.py              # 解析器基类
-│   ├── json_parser.py       # JSON 解析器
-│   ├── csv_parser.py        # CSV 解析器
-│   └── nginx_parser.py      # Nginx 日志解析器
-└── jsonsql.py               # 旧版入口（向后兼容）
+│   ├── base.py              # Parser base class
+│   ├── json_parser.py       # JSON parser
+│   ├── csv_parser.py        # CSV parser
+│   └── nginx_parser.py      # Nginx log parser
+└── jsonsql.py               # Legacy entry point (backward compatible)
 ```
 
-## 扩展开发
+## Extension Development
 
-添加新文件格式支持非常简单，只需创建一个新的解析器类：
+Adding new file format support is simple, just create a new parser class:
 
 ```python
 # parsers/xml_parser.py
@@ -191,63 +194,63 @@ class XMLParser(BaseParser):
         return file_path.lower().endswith('.xml')
 
     def load(self, file_path: str) -> List[Dict[str, Any]]:
-        # 解析 XML 并返回字典列表
+        # Parse XML and return list of dicts
         pass
 ```
 
-然后在 `sqltools.py` 中注册：
+Then register in `sqltools.py`:
 
 ```python
 from parsers.xml_parser import XMLParser
 registry.register(XMLParser)
 ```
 
-## 技术实现
+## Technical Implementation
 
-- **架构模式**：插件化架构，策略模式 + 注册表模式
-- **数据解析**：使用 Python 标准库（json、csv、re）
-- **SQL 引擎**：使用 `sqlite3` 内存数据库
-- **类型推断**：自动推断列类型（INTEGER、REAL、BOOLEAN、TEXT）
-- **CLI**：使用 `argparse` 处理命令行参数
+- **Architecture Pattern**: Plugin architecture, Strategy pattern + Registry pattern
+- **Data Parsing**: Uses Python standard library (json, csv, re)
+- **SQL Engine**: Uses `sqlite3` in-memory database
+- **Type Inference**: Auto-infer column types (INTEGER, REAL, BOOLEAN, TEXT)
+- **CLI**: Uses `argparse` for command-line argument handling
 
-## 注意事项
+## Notes
 
-1. 大型文件会占用较多内存，因为工具会将整个文件加载到内存中
-2. 列类型根据第一个数据项推断，后续不同类型可能导致转换问题
-3. 表名自动从文件名生成，特殊字符会被替换为下划线
-4. 支持的 SQL 功能取决于 SQLite 实现
+1. Large files consume significant memory as the tool loads the entire file into memory
+2. Column types are inferred from the first data item, subsequent different types may cause conversion issues
+3. Table names are auto-generated from filename, special characters are replaced with underscores
+4. Supported SQL features depend on SQLite implementation
 
-## 向后兼容
+## Backward Compatibility
 
-旧版 `jsonsql.py` 仍然可用，功能保持不变：
+The old `jsonsql.py` remains available with unchanged functionality:
 
 ```bash
 python3 jsonsql.py test.json
 ```
 
-## 示例输出
+## Example Output
 
 ```bash
 $ python3 sqltools.py test.log
 
-检测到格式: nginx
-已加载 12 条记录到表 'test' 中
-请输入SQL查询语句，输入 'exit' 或 'quit' 退出程序
+Detected format: nginx
+Loaded 12 records into table 'test'
+Enter SQL queries, type 'exit' or 'quit' to exit
 
 SQL> SELECT status, COUNT(*) FROM test GROUP BY status;
 
-列名: ['status', 'COUNT(*)']
-找到 6 条记录:
-记录 1: {'status': 200, 'COUNT(*)': 6}
-记录 2: {'status': 304, 'COUNT(*)': 1}
-记录 3: {'status': 401, 'COUNT(*)': 1}
-记录 4: {'status': 403, 'COUNT(*)': 1}
-记录 5: {'status': 404, 'COUNT(*)': 2}
-记录 6: {'status': 500, 'COUNT(*)': 1}
+Columns: ['status', 'COUNT(*)']
+Found 6 records:
+Record 1: {'status': 200, 'COUNT(*)': 6}
+Record 2: {'status': 304, 'COUNT(*)': 1}
+Record 3: {'status': 401, 'COUNT(*)': 1}
+Record 4: {'status': 403, 'COUNT(*)': 1}
+Record 5: {'status': 404, 'COUNT(*)': 2}
+Record 6: {'status': 500, 'COUNT(*)': 1}
 
 SQL> exit
 ```
 
-## 许可证
+## License
 
-本项目采用 MIT 许可证。
+This project is licensed under the MIT License.

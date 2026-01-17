@@ -21,9 +21,11 @@ A powerful plugin-based tool that allows you to query multiple file formats incl
 - **Interactive Query**: Command-line interactive SQL query interface
 - **Format Auto-Detection**: Automatically select appropriate parser based on file extension
 - **In-Memory Database**: Uses SQLite in-memory database, no persistent storage required
-- **Zero External Dependencies**: Uses only Python standard library
+- **Multi-Language Support**: Available in both Python and Node.js versions
 
 ## Installation
+
+### Python Version
 
 This tool only requires Python 3.x, no additional dependencies needed.
 
@@ -33,28 +35,47 @@ git clone <repository-url>
 cd sql-tools
 ```
 
+### Node.js Version
+
+```bash
+# Clone or download this project
+git clone <repository-url>
+cd sql-tools/nodejs
+
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Install globally (optional)
+npm install -g .
+```
+
 ## Usage
 
-### Basic Usage
+### Python Version
+
+#### Basic Usage
 
 ```bash
 # Auto-detect format (recommended)
-python3 sqltools.py <file_path>
+python3 python/sqltools.py <file_path>
 
 # List all supported formats
-python3 sqltools.py --list-formats
+python3 python/sqltools.py --list-formats
 
 # Force specific format
-python3 sqltools.py <file_path> --format json|csv|nginx
+python3 python/sqltools.py <file_path> --format json|csv|nginx
 
 # Custom table name
-python3 sqltools.py <file_path> --table <table_name>
+python3 python/sqltools.py <file_path> --table <table_name>
 ```
 
-### JSON Query Example
+#### JSON Query Example
 
 ```bash
-python3 sqltools.py test.json
+python3 python/sqltools.py test.json
 ```
 
 ```sql
@@ -68,10 +89,10 @@ SELECT * FROM test WHERE type = 'PROJECT';
 SELECT type, COUNT(*) FROM test GROUP BY type;
 ```
 
-### CSV Query Example
+#### CSV Query Example
 
 ```bash
-python3 sqltools.py test.csv
+python3 python/sqltools.py test.csv
 ```
 
 ```sql
@@ -85,10 +106,82 @@ SELECT department, COUNT(*) FROM test GROUP BY department;
 SELECT department, AVG(salary) FROM test GROUP BY department;
 ```
 
-### Nginx Log Query Example
+#### Nginx Log Query Example
 
 ```bash
-python3 sqltools.py access.log
+python3 python/sqltools.py access.log
+```
+
+```sql
+-- Status code distribution
+SELECT status, COUNT(*) FROM test GROUP BY status;
+
+-- Find 4xx/5xx errors
+SELECT * FROM test WHERE status >= 400;
+
+-- Top IPs by request count
+SELECT remote_addr, COUNT(*) FROM test GROUP BY remote_addr ORDER BY COUNT(*) DESC LIMIT 10;
+
+-- Request count by path
+SELECT path, COUNT(*) FROM test GROUP BY path ORDER BY COUNT(*) DESC;
+```
+
+### Node.js Version
+
+#### Basic Usage
+
+```bash
+# Auto-detect format (recommended)
+sqltools <file_path>
+
+# List all supported formats
+sqltools --list-formats
+
+# Force specific format
+sqltools <file_path> --format json|csv|nginx
+
+# Custom table name
+sqltools <file_path> --table <table_name>
+```
+
+#### JSON Query Example
+
+```bash
+sqltools test.json
+```
+
+```sql
+-- Query all records
+SELECT * FROM test;
+
+-- Filter by condition
+SELECT * FROM test WHERE type = 'PROJECT';
+
+-- Group by statistics
+SELECT type, COUNT(*) FROM test GROUP BY type;
+```
+
+#### CSV Query Example
+
+```bash
+sqltools test.csv
+```
+
+```sql
+-- View first 5 records
+SELECT * FROM test LIMIT 5;
+
+-- Group by department
+SELECT department, COUNT(*) FROM test GROUP BY department;
+
+-- Calculate average salary
+SELECT department, AVG(salary) FROM test GROUP BY department;
+```
+
+#### Nginx Log Query Example
+
+```bash
+sqltools access.log
 ```
 
 ```sql
@@ -172,20 +265,38 @@ Parsed fields include:
 
 ```
 sql-tools/
-├── sqltools.py              # Main entry point
-├── core/
-│   ├── engine.py            # SQL query execution engine
-│   ├── schema.py            # Table schema inference module
-│   └── registry.py          # Plugin registry
-├── parsers/
-│   ├── base.py              # Parser base class
-│   ├── json_parser.py       # JSON parser
-│   ├── csv_parser.py        # CSV parser
-│   └── nginx_parser.py      # Nginx log parser
-└── jsonsql.py               # Legacy entry point (backward compatible)
+├── python/                  # Python implementation
+│   ├── sqltools.py          # Main entry point
+│   ├── core/
+│   │   ├── engine.py        # SQL query execution engine
+│   │   ├── schema.py        # Table schema inference module
+│   │   └── registry.py      # Plugin registry
+│   ├── parsers/
+│   │   ├── base.py          # Parser base class
+│   │   ├── json_parser.py   # JSON parser
+│   │   ├── csv_parser.py    # CSV parser
+│   │   └── nginx_parser.py  # Nginx log parser
+│   └── jsonsql.py           # Legacy entry point (backward compatible)
+├── nodejs/                  # Node.js implementation
+│   ├── src/
+│   │   ├── cli.ts           # CLI entry point
+│   │   ├── core/
+│   │   │   ├── engine.ts    # SQL query execution engine
+│   │   │   ├── schema.ts    # Table schema inference module
+│   │   │   └── registry.ts  # Plugin registry
+│   │   └── parsers/
+│   │       ├── base.ts      # Parser base class
+│   │       ├── json_parser.ts   # JSON parser
+│   │       ├── csv_parser.ts    # CSV parser
+│   │       └── nginx_parser.ts  # Nginx log parser
+│   ├── package.json
+│   └── tsconfig.json
+└── README.md
 ```
 
 ## Extension Development
+
+### Python Version
 
 Adding new file format support is simple, just create a new parser class:
 
@@ -213,13 +324,57 @@ from parsers.xml_parser import XMLParser
 registry.register(XMLParser)
 ```
 
+### Node.js Version
+
+Adding new file format support is similar:
+
+```typescript
+// parsers/xml_parser.ts
+import { BaseParser, ParserData } from './base';
+
+export class XMLParser extends BaseParser {
+  formatName = 'xml';
+  fileExtensions = ['.xml'];
+  mimeTypes = ['application/xml', 'text/xml'];
+
+  supportsFormat(filePath: string): boolean {
+    return filePath.toLowerCase().endsWith('.xml');
+  }
+
+  load(filePath: string): ParserData[] {
+    // Parse XML and return list of objects
+    return [];
+  }
+}
+```
+
+Then register in `core/registry.ts`:
+
+```typescript
+import { XMLParser } from '../parsers/xml_parser';
+
+// In constructor
+this.register(XMLParser);
+```
+
 ## Technical Implementation
+
+### Python Version
 
 - **Architecture Pattern**: Plugin architecture, Strategy pattern + Registry pattern
 - **Data Parsing**: Uses Python standard library (json, csv, re)
 - **SQL Engine**: Uses `sqlite3` in-memory database
 - **Type Inference**: Auto-infer column types (INTEGER, REAL, BOOLEAN, TEXT)
 - **CLI**: Uses `argparse` for command-line argument handling
+
+### Node.js Version
+
+- **Architecture Pattern**: Plugin architecture, Strategy pattern + Registry pattern
+- **Data Parsing**: Uses Node.js built-in modules (fs, path)
+- **SQL Engine**: Uses `sql.js` (SQLite compiled to WebAssembly)
+- **Type Inference**: Auto-infer column types (INTEGER, REAL, TEXT)
+- **CLI**: Uses `commander` for command-line argument handling
+- **Language**: TypeScript for type safety
 
 ## Notes
 
@@ -230,16 +385,18 @@ registry.register(XMLParser)
 
 ## Backward Compatibility
 
+### Python Version
+
 The old `jsonsql.py` remains available with unchanged functionality:
 
 ```bash
-python3 jsonsql.py test.json
+python3 python/jsonsql.py test.json
 ```
 
 ## Example Output
 
 ```bash
-$ python3 sqltools.py test.log
+$ sqltools test.log
 
 Detected format: nginx
 Loaded 12 records into table 'test'
@@ -247,14 +404,14 @@ Enter SQL queries, type 'exit' or 'quit' to exit
 
 SQL> SELECT status, COUNT(*) FROM test GROUP BY status;
 
-Columns: ['status', 'COUNT(*)']
+Columns: [status, COUNT(*)]
 Found 6 records:
-Record 1: {'status': 200, 'COUNT(*)': 6}
-Record 2: {'status': 304, 'COUNT(*)': 1}
-Record 3: {'status': 401, 'COUNT(*)': 1}
-Record 4: {'status': 403, 'COUNT(*)': 1}
-Record 5: {'status': 404, 'COUNT(*)': 2}
-Record 6: {'status': 500, 'COUNT(*)': 1}
+Record 1: {"status":200,"COUNT(*)":6}
+Record 2: {"status":304,"COUNT(*)":1}
+Record 3: {"status":401,"COUNT(*)":1}
+Record 4: {"status":403,"COUNT(*)":1}
+Record 5: {"status":404,"COUNT(*)":2}
+Record 6: {"status":500,"COUNT(*)":1}
 
 SQL> exit
 ```

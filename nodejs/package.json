@@ -1,0 +1,43 @@
+{
+  "name": "sql-tools",
+  "version": "1.0.0",
+  "description": "A powerful plugin-based tool that allows you to query multiple file formats including JSON, CSV, and Nginx logs using SQL statements",
+  "main": "dist/index.js",
+  "bin": {
+    "sqltools": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/cli.ts",
+    "start": "node dist/cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sql",
+    "json",
+    "csv",
+    "nginx",
+    "log",
+    "query",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0",
+    "sql.js": "^1.10.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.10.6",
+    "@types/sql.js": "^1.4.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

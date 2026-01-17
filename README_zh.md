@@ -1,5 +1,11 @@
 # SQL Tools - 多格式 SQL 查询工具
-[English](README.md) | [简体中文](README_zh.md)
+<div align="center">
+  <img src="logo.jpg" alt="SQL Tools Logo" width="200">
+</div>
+
+<div align="center">
+  <a href="README.md">English</a> | <a href="README_zh.md">简体中文</a>
+</div>
 
 一个强大的插件化工具，允许您使用 SQL 语句查询 JSON、CSV、Nginx 日志等多种文件格式。
 

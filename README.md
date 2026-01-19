@@ -70,7 +70,27 @@ python3 python/sqltools.py <file_path> --format json|csv|nginx
 
 # Custom table name
 python3 python/sqltools.py <file_path> --table <table_name>
+
+# Execute SQL query directly (non-interactive mode, ideal for AI agents)
+python3 python/sqltools.py <file_path> --query 'SELECT COUNT(*) FROM table_name'
 ```
+
+#### Non-Interactive Mode (for AI Agents)
+
+The `--query` option allows you to execute SQL queries directly without entering interactive mode. This is particularly useful for AI agents and automation:
+
+```bash
+# Count records
+python3 python/sqltools.py data.json --query 'SELECT COUNT(*) FROM data'
+
+# Filter and aggregate
+python3 python/sqltools.py data.json --query 'SELECT type, COUNT(*) FROM data GROUP BY type'
+
+# Complex queries
+python3 python/sqltools.py data.csv --query 'SELECT department, AVG(salary) as avg_salary FROM data GROUP BY department ORDER BY avg_salary DESC'
+```
+
+The output is returned as JSON, making it easy to parse programmatically.
 
 #### JSON Query Example
 
@@ -142,7 +162,27 @@ sqltools <file_path> --format json|csv|nginx
 
 # Custom table name
 sqltools <file_path> --table <table_name>
+
+# Execute SQL query directly (non-interactive mode, ideal for AI agents)
+sqltools <file_path> --query 'SELECT COUNT(*) FROM table_name'
 ```
+
+#### Non-Interactive Mode (for AI Agents)
+
+The `--query` option allows you to execute SQL queries directly without entering interactive mode. This is particularly useful for AI agents and automation:
+
+```bash
+# Count records
+sqltools data.json --query 'SELECT COUNT(*) FROM data'
+
+# Filter and aggregate
+sqltools data.json --query 'SELECT type, COUNT(*) FROM data GROUP BY type'
+
+# Complex queries
+sqltools data.csv --query 'SELECT department, AVG(salary) as avg_salary FROM data GROUP BY department ORDER BY avg_salary DESC'
+```
+
+The output is returned as JSON, making it easy to parse programmatically.
 
 #### JSON Query Example
 

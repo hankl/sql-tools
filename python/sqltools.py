@@ -32,7 +32,7 @@ def list_formats():
     print()
 
 
-def query_file(file_path: str, table_name: str = None, format_override: str = None):
+def query_file(file_path: str, table_name: str = None, format_override: str = None, sql_query: str = None):
     """
     Main function: Load file and start SQL query REPL
 
@@ -40,6 +40,7 @@ def query_file(file_path: str, table_name: str = None, format_override: str = No
         file_path: Path to file to query
         table_name: Custom table name (auto-generated if None)
         format_override: Force specific format parser
+        sql_query: SQL query to execute directly (non-interactive mode)
     """
     # Find appropriate parser
     parser = registry.find_parser_for_file(file_path, format_override)
@@ -66,8 +67,14 @@ def query_file(file_path: str, table_name: str = None, format_override: str = No
     engine = SQLEngine()
     engine.load_data(data, table_name)
 
-    # Start interactive REPL
-    engine.run_repl(table_name)
+    # Execute query or start REPL
+    if sql_query:
+        results = engine.execute_query(sql_query)
+        if results is not None:
+            import json
+            print(json.dumps(results, indent=2, ensure_ascii=False))
+    else:
+        engine.run_repl(table_name)
 
     # Cleanup
     engine.close()
@@ -81,6 +88,7 @@ def main():
                "  %(prog)s data.json\n"
                "  %(prog)s access.log --table nginx_logs\n"
                "  %(prog)s data.csv --format csv\n"
+               "  %(prog)s data.json --query 'SELECT COUNT(*) FROM data'\n"
                "  %(prog)s --list-formats",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
@@ -100,6 +108,11 @@ def main():
         dest="format_override",
         choices=['json', 'csv', 'nginx'],
         help="强制指定格式解析器 (默认: 自动检测)"
+    )
+    parser.add_argument(
+        "--query", "-q",
+        dest="sql_query",
+        help="直接执行SQL查询 (非交互模式)"
     )
     parser.add_argument(
         "--list-formats",
@@ -122,7 +135,7 @@ def main():
         parser.error("需要参数: file")
 
     # Run query
-    query_file(args.file, args.table, args.format_override)
+    query_file(args.file, args.table, args.format_override, args.sql_query)
 
 
 if __name__ == "__main__":

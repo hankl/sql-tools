@@ -16,6 +16,7 @@ program
   .argument('<file_path>', 'Path to the file to query')
   .option('-f, --format <format>', 'Force specific format (json, csv, nginx)')
   .option('-t, --table <table_name>', 'Custom table name')
+  .option('-q, --query <sql_query>', 'Execute SQL query directly (non-interactive mode)')
   .option('-l, --list-formats', 'List all supported formats')
   .action(async (filePath: string, options: any) => {
     if (options.listFormats) {
@@ -45,7 +46,14 @@ program
     const engine = new SQLEngine();
     await engine.loadData(data, tableName);
 
-    await engine.runRepl(tableName);
+    if (options.query) {
+      const results = engine.executeQuery(options.query);
+      if (results !== null) {
+        console.log(JSON.stringify(results, null, 2));
+      }
+    } else {
+      await engine.runRepl(tableName);
+    }
 
     engine.close();
   });

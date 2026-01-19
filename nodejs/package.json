@@ -10,6 +10,7 @@
     "build": "tsc",
     "dev": "ts-node src/cli.ts",
     "start": "node dist/cli.js",
+    "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -19,23 +20,35 @@
     "nginx",
     "log",
     "query",
-    "cli"
+    "cli",
+    "database",
+    "sqlite",
+    "data-analysis"
   ],
-  "author": "",
+  "author": "Your Name <your.email@example.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/sql-tools.git"
+  },
+  "homepage": "https://github.com/yourusername/sql-tools#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/sql-tools/issues"
+  },
   "dependencies": {
     "commander": "^11.1.0",
     "sql.js": "^1.10.3"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.8",
     "@types/node": "^20.10.6",
     "@types/sql.js": "^1.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=14.0.0"

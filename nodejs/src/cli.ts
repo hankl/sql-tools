@@ -13,12 +13,12 @@ program
   .version('1.0.0');
 
 program
-  .argument('<file_path>', 'Path to the file to query')
+  .argument('[file_path]', 'Path to the file to query')
   .option('-f, --format <format>', 'Force specific format (json, csv, nginx)')
   .option('-t, --table <table_name>', 'Custom table name')
   .option('-q, --query <sql_query>', 'Execute SQL query directly (non-interactive mode)')
   .option('-l, --list-formats', 'List all supported formats')
-  .action(async (filePath: string, options: any) => {
+  .action(async (filePath: string | undefined, options: any) => {
     if (options.listFormats) {
       const formats = registry.listSupportedFormats();
       console.log('\nSupported formats:');
@@ -26,6 +26,11 @@ program
         console.log(`  ${format.displayName} (${format.name}): ${format.extensions.join(', ')}`);
       }
       console.log();
+      return;
+    }
+
+    if (!filePath) {
+      program.outputHelp();
       return;
     }
 

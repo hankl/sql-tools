@@ -221,4 +221,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Issues
 
-If you find a bug or have a feature request, please [create an issue](https://github.com/yourusername/sql-tools/issues).
+If you find a bug or have a feature request, please [create an issue](https://github.com/hankl/sql-tools/issues).

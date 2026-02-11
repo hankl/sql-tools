@@ -18,6 +18,7 @@ program
   .option('-t, --table <table_name>', 'Custom table name')
   .option('-q, --query <sql_query>', 'Execute SQL query directly (non-interactive mode)')
   .option('-l, --list-formats', 'List all supported formats')
+  .option('-H, --head', 'Show first 3 records')
   .action(async (filePath: string | undefined, options: any) => {
     if (options.listFormats) {
       const formats = registry.listSupportedFormats();
@@ -53,6 +54,11 @@ program
 
     if (options.query) {
       const results = engine.executeQuery(options.query);
+      if (results !== null) {
+        console.log(JSON.stringify(results, null, 2));
+      }
+    } else if (options.head) {
+      const results = engine.executeQuery(`SELECT * FROM ${tableName} LIMIT 3`);
       if (results !== null) {
         console.log(JSON.stringify(results, null, 2));
       }

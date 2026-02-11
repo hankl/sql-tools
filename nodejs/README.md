@@ -45,11 +45,14 @@ sqltools <file_path> --query 'SELECT COUNT(*) FROM table_name'
 
 # Show help
 sqltools --help
+
+# Show first 3 records
+sqltools <file_path> --head
 ```
 
 ### Non-Interactive Mode (for AI Agents)
 
-The `--query` option allows you to execute SQL queries directly without entering interactive mode. This is particularly useful for AI agents and automation:
+The `--query` and `--head` options allow you to execute operations directly without entering interactive mode. This is particularly useful for AI agents and automation:
 
 ```bash
 # Count records
@@ -60,6 +63,9 @@ sqltools data.json --query 'SELECT type, COUNT(*) FROM data GROUP BY type'
 
 # Complex queries
 sqltools data.csv --query 'SELECT department, AVG(salary) as avg_salary FROM data GROUP BY department ORDER BY avg_salary DESC'
+
+# Show first 3 records
+sqltools data.json --head
 ```
 
 The output is returned as JSON, making it easy to parse programmatically.

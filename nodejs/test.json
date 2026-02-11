@@ -1,0 +1,7 @@
+[
+  {"id": 1, "name": "Alice", "age": 28, "department": "Engineering", "salary": 95000},
+  {"id": 2, "name": "Bob", "age": 32, "department": "Marketing", "salary": 87000},
+  {"id": 3, "name": "Charlie", "age": 25, "department": "Engineering", "salary": 82000},
+  {"id": 4, "name": "David", "age": 35, "department": "Management", "salary": 120000},
+  {"id": 5, "name": "Eve", "age": 29, "department": "Marketing", "salary": 90000}
+]
